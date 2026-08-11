@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="so">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MSSIS - Galaan Ardayda</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f1f5f9; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+    .login-card { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); width: 100%; max-width: 380px; }
+    h2 { text-align: center; color: #0f172a; margin-bottom: 20px; }
+    label { font-weight: bold; font-size: 14px; color: #475569; display: block; margin-top: 10px; }
+    input { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box; }
+    button { width: 100%; padding: 12px; background: #2563eb; color: white; border: none; border-radius: 6px; font-weight: bold; margin-top: 20px; cursor: pointer; }
+    button:hover { background: #1d4ed8; }
+    #msg { text-align: center; margin-top: 15px; font-weight: bold; font-size: 14px; }
+  </style>
+</head>
+<body>
+
+<div class="login-card">
+  <h2>MSSIS Student Login</h2>
+  <form id="loginForm">
+    <label>ID-ga Ardayga (MOG...):</label>
+    <input type="text" id="studentId" placeholder="Tusaale: MOG00001" required>
+
+    <label>Password-ka:</label>
+    <input type="password" id="password" placeholder="Geli password-kaaga" required>
+
+    <button type="submit">Soo Gal System-ka</button>
+  </form>
+  <p id="msg"></p>
+</div>
+
+<script>
+  const SUPABASE_URL = "https://egfnjqnglotsyzyfxpxs.supabase.co";
+  const SUPABASE_ANON_KEY = "sb_publishable__3w442NHHaJ5GD01EaNFIw_WeLJw4Xj";
+  const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  document.getElementById('loginForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const id = document.getElementById('studentId').value.trim();
+    const password = document.getElementById('password').value.trim();
+    const msg = document.getElementById('msg');
+
+    msg.style.color = "blue";
+    msg.innerText = "Hubinta xogta...";
+
+    const { data, error } = await db.from('students').select('*').eq('password', password).single();
+
+    if (error || !data) {
+      msg.style.color = "red";
+      msg.innerText = "ID ama Password waa meel gaar ah oo hesho ma ahan!";
+      return;
+    }
+
+    localStorage.setItem('loggedInStudent', JSON.stringify(data));
+    msg.style.color = "green";
+    msg.innerText = "Waad soo gashay! Waana loo gudbinayaa...";
+    setTimeout(() => { window.location.href = "student.html"; }, 1000);
+  });
+</script>
+
+</body>
+</html>
