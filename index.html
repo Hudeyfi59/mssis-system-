@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="so">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MSSIS - Student Registration</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f4f7f6; padding: 20px; display: flex; justify-content: center; }
+    .container { background: white; padding: 25px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); width: 100%; max-width: 450px; }
+    h2 { text-align: center; color: #333; margin-bottom: 20px; }
+    label { display: block; margin-top: 10px; font-weight: bold; color: #555; }
+    input, select { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
+    button { width: 100%; padding: 12px; background: #10b981; color: white; border: none; border-radius: 5px; margin-top: 20px; font-size: 16px; cursor: pointer; font-weight: bold; }
+    button:hover { background: #059669; }
+    #msg { margin-top: 15px; font-weight: bold; text-align: center; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h2>Diwaan-galinta Ardayda (MSSIS)</h2>
+  <form id="studentForm">
+    <label>Magaca Ardayga:</label>
+    <input type="text" id="first_name" required>
+
+    <label>Magaca Aabaha:</label>
+    <input type="text" id="father_name" required>
+
+    <label>Magaca Hooyada:</label>
+    <input type="text" id="mother_name" required>
+
+    <label>Dugsiga (School):</label>
+    <input type="text" id="school" required>
+
+    <label>Klass-ka (Class):</label>
+    <input type="text" id="student_class" required>
+
+    <label>Degmada (District):</label>
+    <select id="district" required>
+      <option value="">Dooroo Degmada...</option>
+      <option value="Hodan">Hodan</option>
+      <option value="Howlwadaag">Howlwadaag</option>
+      <option value="Waberi">Waberi</option>
+      <option value="Karan">Karan</option>
+      <option value="Yaqshid">Yaqshid</option>
+      <option value="Daynile">Daynile</option>
+      <option value="Dharakenley">Dharakenley</option>
+      <option value="Wadajir">Wadajir</option>
+    </select>
+
+    <label>Taariikhda Dhallashada (DOB):</label>
+    <input type="date" id="dob" required>
+
+    <label>Jinsiga (Gender):</label>
+    <select id="gender" required>
+      <option value="LAB">LAB</option>
+      <option value="DHEDIG">DHEDIG</option>
+    </select>
+
+    <label>Password-ka Ardayga:</label>
+    <input type="password" id="password" required>
+
+    <button type="submit">Geli Xogta Ardayga</button>
+  </form>
+  <div id="msg"></div>
+</div>
+
+<script>
+  const SUPABASE_URL = "https://egfnjqnglotsyzyfxpxs.supabase.co";
+  const SUPABASE_ANON_KEY = "sb_publishable__3w442NHHaJ5GD01EaNFIw_WeLJw4Xj";
+  const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  document.getElementById('studentForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const msg = document.getElementById('msg');
+    msg.style.color = "blue";
+    msg.innerText = "Kaydinayaa xogta...";
+
+    const studentData = {
+      first_name: document.getElementById('first_name').value,
+      father_name: document.getElementById('father_name').value,
+      mother_name: document.getElementById('mother_name').value,
+      school: document.getElementById('school').value,
+      student_class: document.getElementById('student_class').value,
+      district: document.getElementById('district').value,
+      dob: document.getElementById('dob').value,
+      gender: document.getElementById('gender').value,
+      password: document.getElementById('password').value
+    };
+
+    const { data, error } = await db.from('students').insert([studentData]).select();
+
+    if (error) {
+      msg.style.color = "red";
+      msg.innerText = "Qalad ayaa dhacay: " + error.message;
+    } else {
+      msg.style.color = "green";
+      msg.innerText = "Ardayga waa la diwaan-galiyay! ID-ga: " + data[0].id;
+      document.getElementById('studentForm').reset();
+    }
+  });
+</script>
+
+</body>
+</html>
