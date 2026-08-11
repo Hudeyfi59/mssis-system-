@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="so">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MSSIS - Bogga Ardayga</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f8fafc; padding: 20px; }
+    .card { max-width: 500px; margin: 0 auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+    .header { background: #0f172a; color: white; padding: 15px; border-radius: 8px; text-align: center; }
+    .info { margin-top: 20px; line-height: 1.8; font-size: 15px; }
+    .info span { font-weight: bold; color: #1e293b; }
+    .logout-btn { display: block; width: 100%; text-align: center; padding: 10px; background: #ef4444; color: white; border: none; border-radius: 6px; text-decoration: none; font-weight: bold; margin-top: 20px; cursor: pointer; }
+  </style>
+</head>
+<body>
+
+<div class="card">
+  <div class="header">
+    <h2 style="margin:0;">STUDENT DIGITAL ID</h2>
+    <small>Ministry Student System (MSSIS)</small>
+  </div>
+  
+  <div class="info" id="studentDetails">
+    Loading...
+  </div>
+
+  <button class="logout-btn" onclick="logout()">Ka bax (Logout)</button>
+</div>
+
+<script>
+  const student = JSON.parse(localStorage.getItem('loggedInStudent'));
+
+  if (!student) {
+    window.location.href = "login.html";
+  } else {
+    document.getElementById('studentDetails').innerHTML = `
+      <p><span>Magaca:</span> ${student.first_name} ${student.father_name}</p>
+      <p><span>Magaca Hooyada:</span> ${student.mother_name}</p>
+      <p><span>Dugsiga:</span> ${student.school}</p>
+      <p><span>Fasalka:</span> ${student.student_class}</p>
+      <p><span>Degmada:</span> ${student.district}</p>
+      <p><span>Jinsiga:</span> ${student.gender}</p>
+    `;
+  }
+
+  function logout() {
+    localStorage.removeItem('loggedInStudent');
+    window.location.href = "login.html";
+  }
+</script>
+
+</body>
+</html>
