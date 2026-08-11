@@ -3,23 +3,41 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MSSIS - Student Registration</title>
+  <title>MSSIS - Ministry Student Portal</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
-    body { font-family: Arial, sans-serif; background: #f4f7f6; padding: 20px; display: flex; justify-content: center; }
-    .container { background: white; padding: 25px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); width: 100%; max-width: 450px; }
-    h2 { text-align: center; color: #333; margin-bottom: 20px; }
-    label { display: block; margin-top: 10px; font-weight: bold; color: #555; }
-    input, select { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
-    button { width: 100%; padding: 12px; background: #10b981; color: white; border: none; border-radius: 5px; margin-top: 20px; font-size: 16px; cursor: pointer; font-weight: bold; }
-    button:hover { background: #059669; }
-    #msg { margin-top: 15px; font-weight: bold; text-align: center; }
+    body { font-family: Arial, sans-serif; background: #f8fafc; margin: 0; padding: 0; }
+    
+    /* Navigation Bar Header */
+    .navbar { background: #0f172a; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; }
+    .navbar h1 { color: white; margin: 0; font-size: 18px; }
+    .nav-links { display: flex; gap: 10px; margin-top: 10px; }
+    .nav-links a { color: white; background: #334155; padding: 8px 12px; text-decoration: none; border-radius: 6px; font-size: 13px; font-weight: bold; }
+    .nav-links a:hover { background: #2563eb; }
+    
+    .container { max-width: 500px; margin: 30px auto; background: white; padding: 25px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+    h2 { color: #1e293b; text-align: center; }
+    label { font-weight: bold; font-size: 14px; margin-top: 10px; display: block; }
+    input, select { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box; }
+    button { width: 100%; padding: 12px; background: #2563eb; color: white; font-weight: bold; border: none; border-radius: 6px; margin-top: 20px; cursor: pointer; }
+    #msg { margin-top: 15px; text-align: center; font-weight: bold; }
   </style>
 </head>
 <body>
 
+<!-- Direct Navigation Menu -->
+<div class="navbar">
+  <h1>MSSIS PORTAL</h1>
+  <div class="nav-links">
+    <a href="index.html">Diwaan-galinta</a>
+    <a href="login.html">Ardayda Login</a>
+    <a href="admin.html">Admin Dashboard</a>
+    <a href="admin-results.html">Geli Darajooyinka</a>
+  </div>
+</div>
+
 <div class="container">
-  <h2>Diwaan-galinta Ardayda (MSSIS)</h2>
+  <h2>Diwaan-gelinta Ardayga</h2>
   <form id="studentForm">
     <label>Magaca Ardayga:</label>
     <input type="text" id="first_name" required>
@@ -38,32 +56,30 @@
 
     <label>Degmada (District):</label>
     <select id="district" required>
-      <option value="">Dooroo Degmada...</option>
+      <option value="">Dooro Degmada...</option>
       <option value="Hodan">Hodan</option>
       <option value="Howlwadaag">Howlwadaag</option>
       <option value="Waberi">Waberi</option>
       <option value="Karan">Karan</option>
       <option value="Yaqshid">Yaqshid</option>
       <option value="Daynile">Daynile</option>
-      <option value="Dharakenley">Dharakenley</option>
-      <option value="Wadajir">Wadajir</option>
     </select>
 
-    <label>Taariikhda Dhallashada (DOB):</label>
+    <label>Taariikhda Dhalashada (DOB):</label>
     <input type="date" id="dob" required>
 
     <label>Jinsiga (Gender):</label>
     <select id="gender" required>
       <option value="LAB">LAB</option>
-      <option value="DHEDIG">DHEDIG</option>
+      <option value="DHOO">DHEDDIG</option>
     </select>
 
     <label>Password-ka Ardayga:</label>
     <input type="password" id="password" required>
 
-    <button type="submit">Geli Xogta Ardayga</button>
+    <button type="submit">Geli Nidaamka</button>
   </form>
-  <div id="msg"></div>
+  <p id="msg"></p>
 </div>
 
 <script>
@@ -75,7 +91,7 @@
     e.preventDefault();
     const msg = document.getElementById('msg');
     msg.style.color = "blue";
-    msg.innerText = "Kaydinayaa xogta...";
+    msg.innerText = "Kaydinayaa...";
 
     const studentData = {
       first_name: document.getElementById('first_name').value,
@@ -93,10 +109,10 @@
 
     if (error) {
       msg.style.color = "red";
-      msg.innerText = "Qalad ayaa dhacay: " + error.message;
+      msg.innerText = "Error: " + error.message;
     } else {
       msg.style.color = "green";
-      msg.innerText = "Ardayga waa la diwaan-galiyay! ID-ga: " + data[0].id;
+      msg.innerText = "Ardayga si guul leh ayaa loo diwaan-galiyay! ID-giisa waa: " + data[0].id;
       document.getElementById('studentForm').reset();
     }
   });
