@@ -4,6 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Mogadishu Schools Student Information System (MSSIS)</title>
+  
+  <!-- PWA Web Manifest (Inline for single-file support) -->
+  <link rel="manifest" href="data:application/manifest+json;charset=utf-8,%7B%22name%22%3A%22MSSIS%20Portal%22%2C%22short_name%22%3A%22MSSIS%22%2C%22start_url%22%3A%22.%2F%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23ffffff%22%2C%22theme_color%22%3A%22%230f172a%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22image_2.png%22%2C%22sizes%22%3A%22192x192%22%2C%22type%22%3A%22image%2Fpng%22%7D%5D%7D">
+  
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- FontAwesome Icons -->
@@ -11,60 +15,100 @@
   <!-- html2pdf Library -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <style>
-    /* Styling to make sure the logo image is contained within its spaces */
-    .contain-image {
-      object-fit: contain;
-    }
-    uppercase-input { text-transform: uppercase; }
+    .contain-image { object-fit: contain; }
+    .uppercase-input { text-transform: uppercase; }
   </style>
 </head>
-<body class="bg-slate-100 font-sans text-slate-800 min-h-screen flex flex-col">
+<body class="bg-slate-100 font-sans text-slate-800 min-h-screen flex flex-col" onload="showTab('landing')">
 
-  <!-- HEADER / NAVIGATION -->
-  <header class="bg-slate-900 text-white shadow-md sticky top-0 z-50">
+  <!-- PWA INSTALL BANNER (Hoosta ka soo baxaya) -->
+  <div id="installBanner" class="fixed bottom-0 left-0 w-full bg-gradient-to-r from-yellow-400 to-yellow-600 text-slate-900 shadow-[0_-4px_10px_rgba(0,0,0,0.2)] z-[100] hidden flex justify-between items-center px-4 py-3 border-t-2 border-yellow-300">
+    <div class="flex items-center space-x-3">
+      <img src="image_2.png" alt="Logo" class="w-12 h-12 rounded-full border-2 border-white contain-image bg-white">
+      <span class="font-extrabold text-sm sm:text-base tracking-wide">Ku shubo MSSIS App - Install</span>
+    </div>
+    <div class="flex items-center space-x-2">
+      <button id="installBtn" class="bg-slate-900 text-yellow-400 px-4 py-2 rounded-lg font-bold text-xs sm:text-sm shadow-md hover:bg-slate-800 transition">INSTALL</button>
+      <button onclick="closeInstallBanner()" class="text-slate-800 font-bold text-xl px-2">&times;</button>
+    </div>
+  </div>
+
+  <!-- HEADER / NAVIGATION (Wuxuu muuqan doonaa kaliya Admin & Student) -->
+  <header id="mainHeader" class="bg-slate-900 text-white shadow-md sticky top-0 z-50 hidden">
     <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap justify-between items-center">
-      <div class="flex items-center space-x-3">
-        <!-- LOGO NEWLY ADDED HERE -->
+      <div class="flex items-center space-x-3 cursor-pointer" onclick="showTab('landing')">
         <img src="image_2.png" alt="MSSIS Logo" class="w-10 h-10 rounded-full contain-image bg-white p-0.5">
         <h1 class="text-xl font-bold tracking-wide">MSSIS PORTAL</h1>
       </div>
       <nav class="flex space-x-2 mt-2 sm:mt-0 flex-wrap">
-        <button onclick="showTab('register')" class="nav-btn bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-md text-sm font-medium transition">Diwaan-galinta</button>
-        <button onclick="showTab('student-login')" class="nav-btn bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-md text-sm font-medium transition">Ardayda Login</button>
-        <button onclick="showTab('admin-login')" class="nav-btn bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-md text-sm font-medium transition">Maamulka</button>
-        <button onclick="showTab('about')" class="nav-btn bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-md text-sm font-medium transition">About Us</button>
+        <button onclick="showTab('landing')" class="bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-md text-sm font-medium transition"><i class="fa-solid fa-home mr-1"></i> Home</button>
       </nav>
     </div>
   </header>
 
-  <main class="flex-grow max-w-7xl w-full mx-auto p-4">
+  <main class="flex-grow flex flex-col justify-center items-center w-full px-4 py-8">
 
-    <!-- 1. DIWAAN-GALINTA (REGISTRATION) -->
-    <section id="tab-register" class="tab-content max-w-2xl mx-auto bg-white p-6 md:p-8 rounded-xl shadow-md border border-slate-200">
+    <!-- 0. BOGGA HORE (LANDING PAGE) -->
+    <section id="tab-landing" class="tab-content w-full max-w-4xl flex flex-col items-center justify-center text-center">
+      <div class="mb-8 animate-fade-in-down">
+        <img src="image_2.png" alt="MSSIS Logo" class="w-36 h-36 md:w-48 md:h-48 mx-auto rounded-full shadow-2xl contain-image bg-white p-2 border-4 border-blue-900 mb-4">
+        <h1 class="text-3xl md:text-5xl font-extrabold text-slate-900 mb-2 uppercase tracking-tight">MSSIS SYSTEM</h1>
+        <p class="text-slate-600 font-medium max-w-lg mx-auto text-sm md:text-base">Mogadishu Schools Student Information System</p>
+      </div>
+
+      <div class="w-full max-w-sm space-y-4">
+        <button onclick="showTab('admin-login')" class="w-full bg-slate-900 hover:bg-slate-800 text-white text-lg font-bold py-4 rounded-xl shadow-lg transition transform hover:scale-[1.02] border border-slate-700 flex items-center justify-center">
+          <i class="fa-solid fa-user-shield mr-3"></i> ADMIN PORTAL
+        </button>
+        <button onclick="showTab('student-login')" class="w-full bg-blue-600 hover:bg-blue-700 text-white text-lg font-bold py-4 rounded-xl shadow-lg transition transform hover:scale-[1.02] border border-blue-500 flex items-center justify-center">
+          <i class="fa-solid fa-user-graduate mr-3"></i> STUDENT PORTAL
+        </button>
+        <button onclick="showTab('register')" class="w-full bg-green-600 hover:bg-green-700 text-white text-lg font-bold py-4 rounded-xl shadow-lg transition transform hover:scale-[1.02] border border-green-500 flex items-center justify-center">
+          <i class="fa-solid fa-user-plus mr-3"></i> DIWAAN-GALINTA
+        </button>
+      </div>
+
+      <!-- Manual Install Button (Haddii Pop-up-ku soo bixi waayo) -->
+      <button id="manualInstallBtn" class="mt-10 flex items-center space-x-2 text-slate-600 hover:text-slate-900 bg-white border border-slate-300 px-5 py-2.5 rounded-full shadow-sm text-sm font-bold transition">
+        <i class="fa-solid fa-mobile-screen-button text-blue-600"></i> <span>Ku shubo App-ka (Add to Home)</span>
+      </button>
+    </section>
+
+    <!-- 1. DIWAAN-GALINTA (REGISTRATION) - Loo daayay foomkeeda gaarka ah -->
+    <section id="tab-register" class="tab-content w-full max-w-2xl bg-white p-6 md:p-8 rounded-2xl shadow-xl border border-slate-200 hidden">
+      <div class="flex justify-between items-center mb-6 pb-4 border-b">
+        <button type="button" onclick="showTab('landing')" class="text-slate-500 hover:text-blue-600 font-semibold transition flex items-center">
+          <i class="fa-solid fa-arrow-left mr-2"></i> Noqo
+        </button>
+        <img src="image_2.png" alt="Logo" class="w-16 h-16 rounded-full contain-image bg-slate-50 p-1 border shadow-sm">
+        <div class="w-16"></div> <!-- Spacer si logadu dhexda u marto -->
+      </div>
+      
       <h2 class="text-2xl font-bold text-slate-800 text-center mb-6">Diwaan-gelinta Ardayga Cusub</h2>
+      
       <form id="regForm" onsubmit="handleRegister(event)" class="space-y-4">
         <div>
           <label class="block text-sm font-semibold mb-1">Magaca Ardayga (FULL NAME):</label>
-          <input type="text" id="regName" required uppercase class="w-full border rounded p-2 text-sm uppercase focus:ring-2 focus:ring-blue-500 outline-none">
+          <input type="text" id="regName" required class="uppercase-input w-full border rounded p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label class="block text-sm font-semibold mb-1">Magaca Aabaha:</label>
-            <input type="text" id="regFather" required class="w-full border rounded p-2 text-sm uppercase focus:ring-2 focus:ring-blue-500 outline-none">
+            <input type="text" id="regFather" required class="uppercase-input w-full border rounded p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
           </div>
           <div>
             <label class="block text-sm font-semibold mb-1">Magaca Hooyada:</label>
-            <input type="text" id="regMother" required class="w-full border rounded p-2 text-sm uppercase focus:ring-2 focus:ring-blue-500 outline-none">
+            <input type="text" id="regMother" required class="uppercase-input w-full border rounded p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
           </div>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label class="block text-sm font-semibold mb-1">Dugsiga (School):</label>
-            <input type="text" id="regSchool" required class="w-full border rounded p-2 text-sm uppercase focus:ring-2 focus:ring-blue-500 outline-none">
+            <input type="text" id="regSchool" required class="uppercase-input w-full border rounded p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
           </div>
           <div>
             <label class="block text-sm font-semibold mb-1">Klass-ka (Class):</label>
-            <input type="text" id="regClass" required class="w-full border rounded p-2 text-sm uppercase focus:ring-2 focus:ring-blue-500 outline-none">
+            <input type="text" id="regClass" required class="uppercase-input w-full border rounded p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
           </div>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -98,16 +142,16 @@
         <div class="border-t pt-4">
           <label class="block text-sm font-semibold mb-2">Sawirka Ardayga (Upload ama Qaad Sawir):</label>
           <div class="flex flex-wrap gap-4 items-center">
-            <input type="file" id="regPhoto" accept="image/*" class="text-sm">
-            <button type="button" onclick="startCamera()" class="bg-gray-700 text-white px-3 py-1.5 rounded text-xs">Kamerada Shid</button>
+            <input type="file" id="regPhoto" accept="image/*" class="text-sm border p-1 rounded w-full md:w-auto">
+            <button type="button" onclick="startCamera()" class="bg-gray-700 text-white px-3 py-1.5 rounded text-xs"><i class="fa-solid fa-camera mr-1"></i> Kamerada Shid</button>
           </div>
-          <div id="cameraArea" class="hidden mt-2">
+          <div id="cameraArea" class="hidden mt-2 border p-2 rounded bg-slate-50 w-fit">
             <video id="video" class="w-48 h-36 bg-black rounded" autoplay></video>
-            <button type="button" onclick="takeSnapshot()" class="bg-green-600 text-white px-3 py-1 rounded text-xs mt-1">Sawirka Iska Qaad</button>
+            <button type="button" onclick="takeSnapshot()" class="w-full bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded text-xs mt-2 font-bold"><i class="fa-solid fa-camera-retro mr-1"></i> Sawirka Iska Qaad</button>
           </div>
           <canvas id="canvas" class="hidden"></canvas>
           <div class="mt-2">
-            <img id="photoPreview" class="w-24 h-28 object-cover border rounded hidden" alt="Preview">
+            <img id="photoPreview" class="w-24 h-28 object-cover border-2 border-blue-200 rounded hidden shadow-sm" alt="Preview">
           </div>
         </div>
 
@@ -116,78 +160,81 @@
           <input type="password" id="regPass" minlength="4" required class="w-full border rounded p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
         </div>
 
-        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded transition">
+        <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg shadow-md transition mt-4 text-lg">
           Kooyshi Diwaan-galinta
         </button>
       </form>
     </section>
 
-    <!-- 2. ARDAYDA LOGIN -->
-    <section id="tab-student-login" class="tab-content max-w-md mx-auto bg-white p-6 rounded-xl shadow-md border border-slate-200 hidden">
-      <h2 class="text-2xl font-bold text-center mb-6 text-slate-800"><i class="fa-solid fa-user-graduate mr-2"></i>Gali User-ka & Password-ka</h2>
+    <!-- 2. ARDAYDA LOGIN & DASHBOARD -->
+    <section id="tab-student-login" class="tab-content w-full max-w-md bg-white p-6 rounded-2xl shadow-xl border border-slate-200 hidden">
+      <h2 class="text-2xl font-bold text-center mb-6 text-slate-800"><i class="fa-solid fa-user-graduate mr-2 text-blue-600"></i>Ardayda Login</h2>
       <form onsubmit="handleStudentLogin(event)" class="space-y-4">
         <div>
           <label class="block text-sm font-semibold mb-1">User ID (e.g. MOG00001):</label>
-          <input type="text" id="stuUser" required placeholder="MOG00001" class="w-full border rounded p-2 text-sm uppercase focus:ring-2 focus:ring-blue-500 outline-none">
+          <input type="text" id="stuUser" required placeholder="MOG00001" class="uppercase-input w-full border rounded p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
         </div>
         <div>
           <label class="block text-sm font-semibold mb-1">Password-ka:</label>
           <input type="password" id="stuPass" required class="w-full border rounded p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
         </div>
-        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 rounded transition">Gali Portal-ka</button>
+        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-lg shadow transition">Gali Portal-ka</button>
       </form>
       
       <div id="studentDashboard" class="mt-6 pt-4 border-t hidden">
-        <h3 class="font-bold text-lg mb-2 text-blue-800">Ku soo dhowaow Portal-ka Ardayga!</h3>
-        <div id="studentProfileDetails" class="space-y-1 text-sm bg-slate-50 p-3 rounded border"></div>
+        <h3 class="font-bold text-lg mb-3 text-blue-800 text-center">Ku soo dhowaow Portal-ka Ardayga!</h3>
+        <div id="studentProfileDetails" class="space-y-1 text-sm bg-blue-50 p-4 rounded-xl border border-blue-100 shadow-inner"></div>
+        <button onclick="document.getElementById('studentDashboard').classList.add('hidden'); document.getElementById('stuUser').value='';" class="mt-4 w-full text-center text-xs text-red-600 font-bold">Logout</button>
       </div>
     </section>
 
     <!-- 3. MAAMULKA (ADMIN) LOGIN & DASHBOARD -->
-    <section id="tab-admin-login" class="tab-content max-w-4xl mx-auto bg-white p-6 rounded-xl shadow-md border border-slate-200 hidden">
+    <section id="tab-admin-login" class="tab-content w-full max-w-5xl hidden">
       <!-- Admin Login Form -->
-      <div id="adminAuthSection" class="max-w-md mx-auto">
-        <h2 class="text-2xl font-bold text-center mb-6 text-slate-800"><i class="fa-solid fa-user-shield mr-2"></i>Gali Maamulka (Admin)</h2>
+      <div id="adminAuthSection" class="max-w-md mx-auto bg-white p-6 rounded-2xl shadow-xl border border-slate-200">
+        <h2 class="text-2xl font-bold text-center mb-6 text-slate-800"><i class="fa-solid fa-user-shield mr-2 text-slate-600"></i>Maamulka Login</h2>
         <form onsubmit="handleAdminLogin(event)" class="space-y-4">
           <div>
             <label class="block text-sm font-semibold mb-1">User ID:</label>
-            <input type="text" id="adminUser" required placeholder="MOG252" class="w-full border rounded p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+            <input type="text" id="adminUser" required placeholder="MOG252" class="w-full border rounded p-2 text-sm focus:ring-2 focus:ring-slate-500 outline-none">
           </div>
           <div>
             <label class="block text-sm font-semibold mb-1">Password-ka:</label>
-            <input type="password" id="adminPass" required class="w-full border rounded p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+            <input type="password" id="adminPass" required class="w-full border rounded p-2 text-sm focus:ring-2 focus:ring-slate-500 outline-none">
           </div>
-          <button type="submit" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-2 rounded transition">Gali Admin Dashboard</button>
+          <button type="submit" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-2.5 rounded-lg shadow transition">Gali Dashboard-ka</button>
         </form>
       </div>
 
       <!-- Admin Panel (Hidden until login) -->
-      <div id="adminPanel" class="hidden">
+      <div id="adminPanel" class="hidden w-full bg-white p-4 md:p-6 rounded-2xl shadow-xl border border-slate-200">
         <div class="flex justify-between items-center mb-6 border-b pb-3">
-          <h2 class="text-xl font-bold text-slate-800">📊 Admin Dashboard</h2>
-          <button onclick="adminLogout()" class="bg-red-500 text-white text-xs px-3 py-1 rounded">Logout</button>
+          <h2 class="text-xl md:text-2xl font-bold text-slate-800"><i class="fa-solid fa-chart-pie mr-2 text-blue-600"></i> Admin Dashboard</h2>
+          <button onclick="adminLogout()" class="bg-red-500 hover:bg-red-600 text-white text-xs md:text-sm px-4 py-1.5 rounded-lg font-bold shadow transition"><i class="fa-solid fa-right-from-bracket mr-1"></i> Logout</button>
         </div>
 
-        <div class="mb-4 flex flex-wrap justify-between items-center gap-2">
-          <input type="text" id="searchBox" onkeyup="renderStudentTable()" placeholder="Raadi Arday (Magac, ID, Degmo)..." class="border p-2 rounded text-sm w-full sm:w-64 uppercase-input">
-          <span id="totalStudentsCount" class="text-sm font-semibold text-slate-600">Total: 0 Arday</span>
+        <div class="mb-4 flex flex-col sm:flex-row justify-between items-center gap-3">
+          <div class="relative w-full sm:w-72">
+            <i class="fa-solid fa-search absolute left-3 top-2.5 text-slate-400"></i>
+            <input type="text" id="searchBox" onkeyup="renderStudentTable()" placeholder="Raadi Arday (Magac, ID)..." class="border p-2 pl-9 rounded-lg text-sm w-full uppercase-input focus:ring-2 focus:ring-blue-500 outline-none">
+          </div>
+          <span id="totalStudentsCount" class="bg-blue-100 text-blue-800 px-4 py-2 rounded-lg text-sm font-bold shadow-sm">Total: 0 Arday</span>
         </div>
 
         <!-- Student List Table -->
-        <div class="overflow-x-auto">
-          <table class="w-full text-left text-xs border-collapse">
+        <div class="overflow-x-auto rounded-lg border border-slate-200 shadow-sm">
+          <table class="w-full text-left text-sm border-collapse whitespace-nowrap">
             <thead>
-              <tr class="bg-slate-100 border-b">
-                <th class="p-2">ID</th>
-                <th class="p-2">Sawir</th>
-                <th class="p-2">Magaca</th>
-                <th class="p-2">Dugsiga</th>
-                <th class="p-2">Degmada</th>
-                <th class="p-2">Jinsiga</th>
-                <th class="p-2">Hawlgallada</th>
+              <tr class="bg-slate-800 text-white">
+                <th class="p-3 font-semibold">ID</th>
+                <th class="p-3 font-semibold">Sawir</th>
+                <th class="p-3 font-semibold">Magaca & Aabaha</th>
+                <th class="p-3 font-semibold">Dugsiga</th>
+                <th class="p-3 font-semibold">Degmada</th>
+                <th class="p-3 font-semibold text-center">Hawlgallada</th>
               </tr>
             </thead>
-            <tbody id="studentTableBody">
+            <tbody id="studentTableBody" class="divide-y divide-slate-200">
               <!-- Rows inserted dynamically -->
             </tbody>
           </table>
@@ -195,88 +242,153 @@
       </div>
     </section>
 
-    <!-- 4. ABOUT US -->
-    <section id="tab-about" class="tab-content max-w-lg mx-auto bg-white p-6 rounded-xl shadow-md border border-slate-200 hidden text-center">
-      <h2 class="text-2xl font-bold mb-4 text-slate-800">Nidaamka MSSIS</h2>
-      <p class="text-slate-600 text-sm mb-4">Mogadishu Schools Student Information System (MSSIS) waa nidaam casri ah oo loogu talagalay maamulka iyo diwaangelinta ardayda iskuullada Muqdisho.</p>
-      <div class="bg-slate-50 p-4 rounded-lg border text-left space-y-2 text-sm">
-        <p><strong>Owner:</strong> Hudeyfi Hassan Mohamed</p>
-        <p><strong>Phone:</strong> +252617745245</p>
-      </div>
-    </section>
-
     <!-- ID CARD MODAL (FOR GENERATING PDF/PRINT) -->
-    <div id="idCardModal" class="fixed inset-0 bg-black/50 hidden flex justify-center items-center p-4 z-50">
-      <div class="bg-white p-6 rounded-lg max-w-sm w-full">
+    <div id="idCardModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm hidden flex justify-center items-center p-4 z-[100]">
+      <div class="bg-white p-6 rounded-2xl max-w-sm w-full shadow-2xl relative">
+        <button onclick="closeModal()" class="absolute -top-3 -right-3 bg-red-600 text-white w-8 h-8 rounded-full font-bold shadow-lg flex items-center justify-center hover:bg-red-700 z-50">&times;</button>
+        
         <!-- ID Card Design Template -->
-        <div id="idCardPrintArea" class="w-[320px] h-[480px] border-4 border-blue-900 rounded-xl p-4 bg-gradient-to-b from-blue-50 to-white mx-auto flex flex-col shadow-lg relative">
-          <!-- Background Watermark Logo NEWLY ADDED HERE -->
-          <img src="image_2.png" alt="Watermark" class="absolute inset-0 w-full h-full object-cover opacity-[0.07] z-0">
+        <div id="idCardPrintArea" class="w-[320px] h-[480px] border-4 border-blue-900 rounded-xl p-4 bg-gradient-to-b from-blue-50 to-white mx-auto flex flex-col shadow-inner relative overflow-hidden">
+          <!-- Background Watermark Logo -->
+          <img src="image_2.png" alt="Watermark" class="absolute inset-0 w-full h-full object-cover opacity-[0.06] z-0 scale-110">
 
-          <!-- Content (must be z-10 to be above watermark) -->
+          <!-- Content (must be z-10) -->
           <div class="relative z-10 flex flex-col justify-between h-full">
             <!-- Header -->
             <div class="text-center border-b-2 border-blue-900 pb-2">
-              <h3 class="font-black text-blue-900 text-sm tracking-wider">MSSIS SYSTEM</h3>
-              <p class="text-[10px] text-gray-600 font-bold">MOGADISHU SCHOOLS PORTAL</p>
+              <h3 class="font-black text-blue-900 text-sm tracking-widest">MSSIS SYSTEM</h3>
+              <p class="text-[9px] text-slate-600 font-bold tracking-wide">MOGADISHU SCHOOLS PORTAL</p>
             </div>
             
             <!-- Photo & Basic Info -->
-            <div class="flex flex-col items-center my-2">
-              <img id="cardImg" class="w-24 h-28 object-cover border-2 border-blue-900 rounded-md shadow bg-white" src="" alt="Student">
-              <h4 id="cardName" class="font-extrabold text-slate-900 text-xs mt-2 text-center uppercase"></h4>
-              <span id="cardID" class="bg-blue-900 text-white font-bold text-[11px] px-3 py-0.5 rounded-full mt-1"></span>
+            <div class="flex flex-col items-center my-3">
+              <img id="cardImg" class="w-24 h-28 object-cover border-[3px] border-blue-900 rounded-md shadow-md bg-white" src="" alt="Student">
+              <h4 id="cardName" class="font-extrabold text-slate-900 text-xs mt-2 text-center uppercase px-2 w-full truncate"></h4>
+              <span id="cardID" class="bg-blue-900 text-yellow-400 font-bold text-[11px] px-4 py-0.5 rounded-full mt-1 shadow"></span>
             </div>
 
             <!-- Student Details -->
-            <div class="text-[11px] space-y-1 text-slate-800 border-t border-slate-300 pt-2 font-medium">
-              <p><strong>Dugsiga:</strong> <span id="cardSchool"></span></p>
-              <p><strong>Klass-ka:</strong> <span id="cardClass"></span></p>
-              <p><strong>Degmada:</strong> <span id="cardDistrict"></span></p>
-              <p><strong>Jinsiga:</strong> <span id="cardGender"></span></p>
+            <div class="text-[11px] space-y-1.5 text-slate-800 border-t-2 border-dashed border-slate-300 pt-3 font-semibold px-2">
+              <p class="flex justify-between"><span>Dugsiga:</span> <span id="cardSchool" class="text-right truncate w-3/5 text-blue-900"></span></p>
+              <p class="flex justify-between"><span>Fasalka:</span> <span id="cardClass" class="text-right text-blue-900"></span></p>
+              <p class="flex justify-between"><span>Degmada:</span> <span id="cardDistrict" class="text-right text-blue-900"></span></p>
+              <p class="flex justify-between"><span>Jinsiga:</span> <span id="cardGender" class="text-right text-blue-900"></span></p>
             </div>
 
             <!-- Seal and Signature -->
-            <div class="flex justify-between items-end border-t border-slate-300 pt-2 text-[9px] mt-2">
+            <div class="flex justify-between items-end border-t-2 border-blue-900 pt-2 text-[9px] mt-2">
               <div class="text-center">
-                <!-- Mini Logo in SEAL NEWLY ADDED HERE -->
-                <img src="image_2.png" alt="Seal" class="w-8 h-8 rounded-full contain-image mx-auto mb-1 opacity-80 border border-blue-800 p-0.5">
-                <span>MSSIS Official</span>
+                <img src="image_2.png" alt="Seal" class="w-8 h-8 rounded-full contain-image mx-auto mb-1 opacity-90 border border-blue-800 p-0.5 bg-white">
+                <span class="font-bold text-slate-700">Official Seal</span>
               </div>
               <div class="text-center">
-                <div class="font-serif italic border-b border-black px-2">H. Hassan</div>
-                <span>Authorized</span>
+                <div class="font-serif italic border-b border-black px-4 text-[10px] text-blue-900 font-bold">H. Hassan</div>
+                <span class="font-bold text-slate-700 mt-1 block">Authorized Sign</span>
               </div>
             </div>
           </div>
         </div>
 
-        <div class="mt-4 flex gap-2 relative z-10">
-          <button onclick="downloadPDF()" class="flex-1 bg-green-600 hover:bg-green-700 text-white text-xs py-2 rounded font-bold transition">La soo deg PDF</button>
-          <button onclick="closeModal()" class="flex-1 bg-gray-500 hover:bg-gray-600 text-white text-xs py-2 rounded font-bold transition">Xir</button>
+        <div class="mt-5 relative z-10">
+          <button onclick="downloadPDF()" class="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg font-bold shadow-md transition flex items-center justify-center text-sm">
+            <i class="fa-solid fa-download mr-2"></i> La soo deg PDF (Download)
+          </button>
         </div>
       </div>
     </div>
 
   </main>
 
+  <!-- FOOTER (Ku Saabsan MSSIS & Xogta Xidhiidhka) -->
+  <footer id="mainFooter" class="bg-slate-900 text-slate-300 w-full mt-auto">
+    <div class="max-w-7xl mx-auto px-6 py-10 grid grid-cols-1 md:grid-cols-2 gap-8 text-center md:text-left">
+      <div>
+        <div class="flex items-center justify-center md:justify-start space-x-3 mb-4">
+          <img src="image_2.png" alt="Logo" class="w-8 h-8 bg-white rounded-full p-0.5 contain-image">
+          <h3 class="text-xl font-bold text-white tracking-wide">Ku Saabsan MSSIS</h3>
+        </div>
+        <p class="text-sm leading-relaxed text-slate-400">
+          Mogadishu Schools Student Information System (MSSIS) waa madal casri ah oo loo habeeyay in ay si sahlan oo hufan isugu xirto maamulka iyo ardayda iskuullada caasimada. Waxay kaydisaa xogta ardayga si ammaan ah, fududaynaysana soo saarista ID-yada.
+        </p>
+      </div>
+      <div class="md:pl-10">
+        <h3 class="text-xl font-bold text-white mb-4">Xogta Xidhiidhka</h3>
+        <ul class="text-sm space-y-3">
+          <li class="flex items-center justify-center md:justify-start"><i class="fa-solid fa-user-tie w-6 text-yellow-500"></i> Hudeyfi Hassan Mohamed (Agaasime)</li>
+          <li class="flex items-center justify-center md:justify-start"><i class="fa-solid fa-phone w-6 text-green-500"></i> +252 617 745 245</li>
+          <li class="flex items-center justify-center md:justify-start"><i class="fa-solid fa-envelope w-6 text-blue-400"></i> info@mssis.com</li>
+          <li class="flex items-center justify-center md:justify-start"><i class="fa-solid fa-location-dot w-6 text-red-500"></i> Muqdisho, Soomaaliya</li>
+        </ul>
+      </div>
+    </div>
+    <div class="border-t border-slate-800 py-4 bg-black/20 text-center text-xs text-slate-500">
+      &copy; 2026 Nidaamka MSSIS. All rights reserved. 
+    </div>
+  </footer>
+
   <script>
     // --- DATABASE INITIALIZATION ---
     let students = JSON.parse(localStorage.getItem('mssis_students')) || [];
     let currentPhotoBase64 = '';
 
-    // --- NAVIGATION LOGIC ---
+    // --- PWA & APP INSTALL LOGIC ---
+    let deferredPrompt;
+    
+    // Catch install prompt
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      // Show golden banner automatically when ready
+      document.getElementById('installBanner').classList.remove('hidden');
+    });
+
+    // Handle Install Button Click (Banner & Landing Page Button)
+    function triggerInstall() {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then((choiceResult) => {
+          if (choiceResult.outcome === 'accepted') {
+            console.log('User accepted the install prompt');
+          }
+          deferredPrompt = null;
+          closeInstallBanner();
+        });
+      } else {
+        alert("Si aad ugu shubato taleefankaaga:\nFadlan taabo 3-da dhibcood (Menu) ee Chrome-ka, kadibna dooro 'Add to Home Screen' ama 'Install app'.");
+      }
+    }
+    
+    document.getElementById('installBtn').addEventListener('click', triggerInstall);
+    
+    // Add event to manual button if exists
+    const manualBtn = document.getElementById('manualInstallBtn');
+    if(manualBtn) manualBtn.addEventListener('click', triggerInstall);
+
+    function closeInstallBanner() {
+      document.getElementById('installBanner').classList.add('hidden');
+    }
+
+    // --- NAVIGATION LOGIC (Single Page App Control) ---
     function showTab(tabName) {
+      // Hide all tabs
       document.querySelectorAll('.tab-content').forEach(tab => tab.classList.add('hidden'));
+      // Show target tab
       document.getElementById('tab-' + tabName).classList.remove('hidden');
       
-      // Update nav active state (optional but nice)
-      document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('bg-blue-600', 'hover:bg-blue-700'));
-      // Could add logic here to highlight the active button
+      // Control Header Visibility
+      const header = document.getElementById('mainHeader');
+      if (tabName === 'landing' || tabName === 'register') {
+        header.classList.add('hidden'); // Qari header-ka bogga hore & diwaan-galinta
+      } else {
+        header.classList.remove('hidden'); // Muuji header-ka Admin & Student portal
+      }
+
+      // Scroll top
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     // AUTO CAPITALIZE INPUTS
-    document.querySelectorAll('input[type="text"]').forEach(input => {
+    document.querySelectorAll('.uppercase-input').forEach(input => {
       input.addEventListener('input', (e) => {
         e.target.value = e.target.value.toUpperCase();
       });
@@ -304,12 +416,10 @@
       preview.src = currentPhotoBase64;
       preview.classList.remove('hidden');
       
-      // Stop Camera
       if(video.srcObject) video.srcObject.getTracks().forEach(track => track.stop());
       document.getElementById('cameraArea').classList.add('hidden');
     }
 
-    // Photo File Upload Event
     document.getElementById('regPhoto').addEventListener('change', function(e) {
       const file = e.target.files[0];
       if (file) {
@@ -324,7 +434,7 @@
       }
     });
 
-    // --- AGE VALIDATION & REGISTRATION ---
+    // --- REGISTRATION ---
     function calculateAge(dobString) {
       const today = new Date();
       const birthDate = new Date(dobString);
@@ -343,9 +453,7 @@
       e.preventDefault();
       
       const dob = document.getElementById('regDOB').value;
-      const age = calculateAge(dob);
-
-      if (age > 25) {
+      if (calculateAge(dob) > 25) {
         alert("Nidaamka ma ogola arday ka weyn 25 sano!");
         return;
       }
@@ -367,7 +475,7 @@
       students.push(newStudent);
       localStorage.setItem('mssis_students', JSON.stringify(students));
 
-      alert(`Aad ayaa loo diwaangeliyay!\nUser ID-kaagu waa: ${newStudent.id}\nPassword-kaagu waa kan aad samaysatay.`);
+      alert(`Aad ayaa loo diwaangeliyay!\nUser ID-kaagu waa: ${newStudent.id}`);
       document.getElementById('regForm').reset();
       document.getElementById('photoPreview').classList.add('hidden');
       currentPhotoBase64 = '';
@@ -387,16 +495,20 @@
         const details = document.getElementById('studentProfileDetails');
         dash.classList.remove('hidden');
         details.innerHTML = `
-          <div class="flex items-center gap-3 mb-2">
-            <img src="${found.photo}" class="w-12 h-14 object-cover border rounded">
+          <div class="flex items-center gap-4 mb-3 pb-3 border-b border-blue-200">
+            <img src="${found.photo}" class="w-16 h-20 object-cover border-2 border-white shadow-md rounded-md">
             <div>
-              <p><strong>Magaca:</strong> ${found.name} ${found.father}</p>
-              <p><strong>ID Number:</strong> <span class="text-blue-600 font-bold">${found.id}</span></p>
+              <p class="font-bold text-slate-800 text-lg leading-tight uppercase">${found.name} ${found.father}</p>
+              <p class="text-xs text-slate-500 mt-1">ID Number:</p>
+              <p class="text-blue-700 font-extrabold text-sm px-2 py-0.5 bg-blue-100 rounded inline-block mt-0.5">${found.id}</p>
             </div>
           </div>
-          <p><strong>Dugsiga:</strong> ${found.school}</p>
-          <p><strong>Fasalka:</strong> ${found.class}</p>
-          <p><strong>Degmada:</strong> ${found.district}</p>
+          <div class="grid grid-cols-2 gap-2 text-slate-700">
+            <p><strong class="block text-[10px] uppercase text-slate-500">Dugsiga</strong> ${found.school}</p>
+            <p><strong class="block text-[10px] uppercase text-slate-500">Fasalka</strong> ${found.class}</p>
+            <p><strong class="block text-[10px] uppercase text-slate-500">Degmada</strong> ${found.district}</p>
+            <p><strong class="block text-[10px] uppercase text-slate-500">Jinsiga</strong> ${found.gender}</p>
+          </div>
         `;
       } else {
         alert("User ID ama Password waa dhalatad!");
@@ -414,13 +526,15 @@
         document.getElementById('adminPanel').classList.remove('hidden');
         renderStudentTable();
       } else {
-        alert("Maamulka ID ama Password waa makori ka baxsan!");
+        alert("Maamulka ID ama Password waa qaldan yahay!");
       }
     }
 
     function adminLogout() {
       document.getElementById('adminAuthSection').classList.remove('hidden');
       document.getElementById('adminPanel').classList.add('hidden');
+      document.getElementById('adminUser').value = '';
+      document.getElementById('adminPass').value = '';
     }
 
     function renderStudentTable() {
@@ -429,24 +543,24 @@
       tbody.innerHTML = '';
 
       const filtered = students.filter(s => 
-        s.name.includes(query) || s.id.includes(query) || s.district.toUpperCase().includes(query)
+        s.name.includes(query) || s.id.includes(query)
       );
 
       document.getElementById('totalStudentsCount').innerText = `Total: ${filtered.length} Arday`;
 
-      filtered.forEach((s, idx) => {
+      filtered.forEach((s) => {
         const tr = document.createElement('tr');
-        tr.className = "border-b hover:bg-slate-50";
+        tr.className = "hover:bg-slate-50 transition";
         tr.innerHTML = `
-          <td class="p-2 font-bold">${s.id}</td>
-          <td class="p-2"><img src="${s.photo}" class="w-8 h-8 rounded-full object-cover"></td>
-          <td class="p-2 font-semibold uppercase">${s.name} ${s.father}</td>
-          <td class="p-2 uppercase">${s.school}</td>
-          <td class="p-2">${s.district}</td>
-          <td class="p-2">${s.gender}</td>
-          <td class="p-2 space-x-1 flex">
-            <button onclick="generateIDCard('${s.id}')" class="bg-blue-600 text-white px-2 py-1 rounded text-[10px]">ID Card</button>
-            <button onclick="deleteStudent('${s.id}')" class="bg-red-600 text-white px-2 py-1 rounded text-[10px]">Delete</button>
+          <td class="p-3 font-bold text-blue-700">${s.id}</td>
+          <td class="p-3"><img src="${s.photo}" class="w-10 h-10 rounded-full object-cover border shadow-sm"></td>
+          <td class="p-3 font-semibold text-slate-800 uppercase">${s.name} ${s.father}</td>
+          <td class="p-3 text-slate-600 uppercase text-xs">${s.school}</td>
+          <td class="p-3 text-slate-600 text-xs">${s.district}</td>
+          <td class="p-3 space-x-2 text-center">
+            <!-- BATOONKA GENERATE ID CARD WAA KAN (Sida la faray) -->
+            <button onclick="generateIDCard('${s.id}')" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded shadow-sm text-[11px] font-bold inline-flex items-center"><i class="fa-solid fa-id-card mr-1"></i> ID Card</button>
+            <button onclick="deleteStudent('${s.id}')" class="bg-red-100 hover:bg-red-600 hover:text-white text-red-600 px-3 py-1.5 rounded shadow-sm text-[11px] font-bold transition"><i class="fa-solid fa-trash-can"></i></button>
           </td>
         `;
         tbody.appendChild(tr);
@@ -454,14 +568,14 @@
     }
 
     function deleteStudent(id) {
-      if (confirm(`Ma xeerinaysaa ardaygan: ${id}?`)) {
+      if (confirm(`Ma hubtaa inaad tirtirto ardaygan: ${id}?`)) {
         students = students.filter(s => s.id !== id);
         localStorage.setItem('mssis_students', JSON.stringify(students));
         renderStudentTable();
       }
     }
 
-    // --- ID CARD GENERATOR ---
+    // --- ID CARD GENERATOR WIDGET ---
     function generateIDCard(id) {
       const student = students.find(s => s.id === id);
       if (!student) return;
@@ -484,11 +598,11 @@
     function downloadPDF() {
       const element = document.getElementById('idCardPrintArea');
       const opt = {
-        margin:       [0, 0], // Top, Left, Bottom, Right margin
-        filename:     `ID_CARD_${document.getElementById('cardID').innerText}.pdf`,
-        image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 3, useCORS: true }, // CORs needed for local images on vercel
-        jsPDF:        { unit: 'in', format: [3.375, 4.875], orientation: 'portrait' } // Adjusted for our specific ID size [width, height] in inches
+        margin:       0, 
+        filename:     `MSSIS_ID_${document.getElementById('cardID').innerText}.pdf`,
+        image:        { type: 'jpeg', quality: 1 },
+        html2canvas:  { scale: 4, useCORS: true, logging: false },
+        jsPDF:        { unit: 'in', format: [3.375, 4.875], orientation: 'portrait' } 
       };
       html2pdf().set(opt).from(element).save();
     }
