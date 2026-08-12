@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Mogadishu Schools Student Information System (MSSIS)</title>
   
-  <!-- PWA Web Manifest (Inline for single-file support) -->
+  <!-- PWA Web Manifest -->
   <link rel="manifest" href="data:application/manifest+json;charset=utf-8,%7B%22name%22%3A%22MSSIS%20Portal%22%2C%22short_name%22%3A%22MSSIS%22%2C%22start_url%22%3A%22.%2F%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23ffffff%22%2C%22theme_color%22%3A%22%230f172a%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22image_2.png%22%2C%22sizes%22%3A%22192x192%22%2C%22type%22%3A%22image%2Fpng%22%7D%5D%7D">
   
   <!-- Tailwind CSS CDN -->
@@ -14,6 +14,9 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <!-- html2pdf Library -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <!-- Supabase JS Library CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <style>
     .contain-image { object-fit: contain; }
     .uppercase-input { text-transform: uppercase; }
@@ -21,7 +24,7 @@
 </head>
 <body class="bg-slate-100 font-sans text-slate-800 min-h-screen flex flex-col" onload="showTab('landing')">
 
-  <!-- PWA INSTALL BANNER (Hoosta ka soo baxaya) -->
+  <!-- PWA INSTALL BANNER -->
   <div id="installBanner" class="fixed bottom-0 left-0 w-full bg-gradient-to-r from-yellow-400 to-yellow-600 text-slate-900 shadow-[0_-4px_10px_rgba(0,0,0,0.2)] z-[100] hidden flex justify-between items-center px-4 py-3 border-t-2 border-yellow-300">
     <div class="flex items-center space-x-3">
       <img src="image_2.png" alt="Logo" class="w-12 h-12 rounded-full border-2 border-white contain-image bg-white">
@@ -33,7 +36,7 @@
     </div>
   </div>
 
-  <!-- HEADER / NAVIGATION (Wuxuu muuqan doonaa kaliya Admin & Student) -->
+  <!-- HEADER / NAVIGATION -->
   <header id="mainHeader" class="bg-slate-900 text-white shadow-md sticky top-0 z-50 hidden">
     <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap justify-between items-center">
       <div class="flex items-center space-x-3 cursor-pointer" onclick="showTab('landing')">
@@ -68,20 +71,19 @@
         </button>
       </div>
 
-      <!-- Manual Install Button (Haddii Pop-up-ku soo bixi waayo) -->
       <button id="manualInstallBtn" class="mt-10 flex items-center space-x-2 text-slate-600 hover:text-slate-900 bg-white border border-slate-300 px-5 py-2.5 rounded-full shadow-sm text-sm font-bold transition">
         <i class="fa-solid fa-mobile-screen-button text-blue-600"></i> <span>Ku shubo App-ka (Add to Home)</span>
       </button>
     </section>
 
-    <!-- 1. DIWAAN-GALINTA (REGISTRATION) - Loo daayay foomkeeda gaarka ah -->
+    <!-- 1. DIWAAN-GALINTA (REGISTRATION) -->
     <section id="tab-register" class="tab-content w-full max-w-2xl bg-white p-6 md:p-8 rounded-2xl shadow-xl border border-slate-200 hidden">
       <div class="flex justify-between items-center mb-6 pb-4 border-b">
         <button type="button" onclick="showTab('landing')" class="text-slate-500 hover:text-blue-600 font-semibold transition flex items-center">
           <i class="fa-solid fa-arrow-left mr-2"></i> Noqo
         </button>
         <img src="image_2.png" alt="Logo" class="w-16 h-16 rounded-full contain-image bg-slate-50 p-1 border shadow-sm">
-        <div class="w-16"></div> <!-- Spacer si logadu dhexda u marto -->
+        <div class="w-16"></div>
       </div>
       
       <h2 class="text-2xl font-bold text-slate-800 text-center mb-6">Diwaan-gelinta Ardayga Cusub</h2>
@@ -153,16 +155,6 @@
           <div class="mt-2">
             <img id="photoPreview" class="w-24 h-28 object-cover border-2 border-blue-200 rounded hidden shadow-sm" alt="Preview">
           </div>
-
-          <!-- === ADDITION 1: REMOVE BACKGROUND BUTTON === -->
-          <div class="mt-2">
-            <button type="button" id="removeBgBtn" onclick="removeBackgroundFromPhoto()" class="bg-purple-600 hover:bg-purple-700 text-white px-3 py-1.5 rounded text-xs font-bold shadow-sm">
-              <i class="fa-solid fa-eraser mr-1"></i> Saar Background-ka Sawirka
-            </button>
-            <span id="removeBgStatus" class="text-xs text-slate-500 ml-2"></span>
-          </div>
-          <!-- === END ADDITION 1 === -->
-
         </div>
 
         <div>
@@ -170,7 +162,7 @@
           <input type="password" id="regPass" minlength="4" required class="w-full border rounded p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
         </div>
 
-        <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg shadow-md transition mt-4 text-lg">
+        <button type="submit" id="submitBtn" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg shadow-md transition mt-4 text-lg">
           Kooyshi Diwaan-galinta
         </button>
       </form>
@@ -200,7 +192,6 @@
 
     <!-- 3. MAAMULKA (ADMIN) LOGIN & DASHBOARD -->
     <section id="tab-admin-login" class="tab-content w-full max-w-5xl hidden">
-      <!-- Admin Login Form -->
       <div id="adminAuthSection" class="max-w-md mx-auto bg-white p-6 rounded-2xl shadow-xl border border-slate-200">
         <h2 class="text-2xl font-bold text-center mb-6 text-slate-800"><i class="fa-solid fa-user-shield mr-2 text-slate-600"></i>Maamulka Login</h2>
         <form onsubmit="handleAdminLogin(event)" class="space-y-4">
@@ -216,7 +207,6 @@
         </form>
       </div>
 
-      <!-- Admin Panel (Hidden until login) -->
       <div id="adminPanel" class="hidden w-full bg-white p-4 md:p-6 rounded-2xl shadow-xl border border-slate-200">
         <div class="flex justify-between items-center mb-6 border-b pb-3">
           <h2 class="text-xl md:text-2xl font-bold text-slate-800"><i class="fa-solid fa-chart-pie mr-2 text-blue-600"></i> Admin Dashboard</h2>
@@ -231,7 +221,6 @@
           <span id="totalStudentsCount" class="bg-blue-100 text-blue-800 px-4 py-2 rounded-lg text-sm font-bold shadow-sm">Total: 0 Arday</span>
         </div>
 
-        <!-- Student List Table -->
         <div class="overflow-x-auto rounded-lg border border-slate-200 shadow-sm">
           <table class="w-full text-left text-sm border-collapse whitespace-nowrap">
             <thead>
@@ -245,39 +234,32 @@
               </tr>
             </thead>
             <tbody id="studentTableBody" class="divide-y divide-slate-200">
-              <!-- Rows inserted dynamically -->
             </tbody>
           </table>
         </div>
       </div>
     </section>
 
-    <!-- ID CARD MODAL (FOR GENERATING PDF/PRINT) -->
+    <!-- ID CARD MODAL -->
     <div id="idCardModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm hidden flex justify-center items-center p-4 z-[100]">
       <div class="bg-white p-6 rounded-2xl max-w-sm w-full shadow-2xl relative">
         <button onclick="closeModal()" class="absolute -top-3 -right-3 bg-red-600 text-white w-8 h-8 rounded-full font-bold shadow-lg flex items-center justify-center hover:bg-red-700 z-50">&times;</button>
         
-        <!-- ID Card Design Template -->
         <div id="idCardPrintArea" class="w-[320px] h-[480px] border-4 border-blue-900 rounded-xl p-4 bg-gradient-to-b from-blue-50 to-white mx-auto flex flex-col shadow-inner relative overflow-hidden">
-          <!-- Background Watermark Logo -->
           <img src="image_2.png" alt="Watermark" class="absolute inset-0 w-full h-full object-cover opacity-[0.06] z-0 scale-110">
 
-          <!-- Content (must be z-10) -->
           <div class="relative z-10 flex flex-col justify-between h-full">
-            <!-- Header -->
             <div class="text-center border-b-2 border-blue-900 pb-2">
               <h3 class="font-black text-blue-900 text-sm tracking-widest">MSSIS SYSTEM</h3>
               <p class="text-[9px] text-slate-600 font-bold tracking-wide">MOGADISHU SCHOOLS PORTAL</p>
             </div>
             
-            <!-- Photo & Basic Info -->
             <div class="flex flex-col items-center my-3">
               <img id="cardImg" class="w-24 h-28 object-cover border-[3px] border-blue-900 rounded-md shadow-md bg-white" src="" alt="Student">
               <h4 id="cardName" class="font-extrabold text-slate-900 text-xs mt-2 text-center uppercase px-2 w-full truncate"></h4>
               <span id="cardID" class="bg-blue-900 text-yellow-400 font-bold text-[11px] px-4 py-0.5 rounded-full mt-1 shadow"></span>
             </div>
 
-            <!-- Student Details -->
             <div class="text-[11px] space-y-1.5 text-slate-800 border-t-2 border-dashed border-slate-300 pt-3 font-semibold px-2">
               <p class="flex justify-between"><span>Dugsiga:</span> <span id="cardSchool" class="text-right truncate w-3/5 text-blue-900"></span></p>
               <p class="flex justify-between"><span>Fasalka:</span> <span id="cardClass" class="text-right text-blue-900"></span></p>
@@ -285,7 +267,6 @@
               <p class="flex justify-between"><span>Jinsiga:</span> <span id="cardGender" class="text-right text-blue-900"></span></p>
             </div>
 
-            <!-- Seal and Signature -->
             <div class="flex justify-between items-end border-t-2 border-blue-900 pt-2 text-[9px] mt-2">
               <div class="text-center">
                 <img src="image_2.png" alt="Seal" class="w-8 h-8 rounded-full contain-image mx-auto mb-1 opacity-90 border border-blue-800 p-0.5 bg-white">
@@ -309,7 +290,7 @@
 
   </main>
 
-  <!-- FOOTER (Ku Saabsan MSSIS & Xogta Xidhiidhka) -->
+  <!-- FOOTER -->
   <footer id="mainFooter" class="bg-slate-900 text-slate-300 w-full mt-auto">
     <div class="max-w-7xl mx-auto px-6 py-10 grid grid-cols-1 md:grid-cols-2 gap-8 text-center md:text-left">
       <div>
@@ -337,28 +318,29 @@
   </footer>
 
   <script>
-    // --- DATABASE INITIALIZATION ---
-    let students = JSON.parse(localStorage.getItem('mssis_students')) || [];
+    // --- SUPABASE CONFIGURATION (XOGTAADA) ---
+    const SUPABASE_URL = 'https://egfnjqnglotsyzyfxpxs.supabase.co';
+    const SUPABASE_ANON_KEY = 'sb_publishable__3w442NHHaJ5GD01EaNFIw_WeLJw4Xj';
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    let students = [];
     let currentPhotoBase64 = '';
 
     // --- PWA & APP INSTALL LOGIC ---
     let deferredPrompt;
     
-    // Catch install prompt
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
       deferredPrompt = e;
-      // Show golden banner automatically when ready
       document.getElementById('installBanner').classList.remove('hidden');
     });
 
-    // Handle Install Button Click (Banner & Landing Page Button)
     function triggerInstall() {
       if (deferredPrompt) {
         deferredPrompt.prompt();
         deferredPrompt.userChoice.then((choiceResult) => {
           if (choiceResult.outcome === 'accepted') {
-            console.log('User accepted the install prompt');
+            console.log('User accepted install prompt');
           }
           deferredPrompt = null;
           closeInstallBanner();
@@ -369,8 +351,6 @@
     }
     
     document.getElementById('installBtn').addEventListener('click', triggerInstall);
-    
-    // Add event to manual button if exists
     const manualBtn = document.getElementById('manualInstallBtn');
     if(manualBtn) manualBtn.addEventListener('click', triggerInstall);
 
@@ -378,22 +358,18 @@
       document.getElementById('installBanner').classList.add('hidden');
     }
 
-    // --- NAVIGATION LOGIC (Single Page App Control) ---
+    // --- NAVIGATION LOGIC ---
     function showTab(tabName) {
-      // Hide all tabs
       document.querySelectorAll('.tab-content').forEach(tab => tab.classList.add('hidden'));
-      // Show target tab
       document.getElementById('tab-' + tabName).classList.remove('hidden');
       
-      // Control Header Visibility
       const header = document.getElementById('mainHeader');
       if (tabName === 'landing' || tabName === 'register') {
-        header.classList.add('hidden'); // Qari header-ka bogga hore & diwaan-galinta
+        header.classList.add('hidden');
       } else {
-        header.classList.remove('hidden'); // Muuji header-ka Admin & Student portal
+        header.classList.remove('hidden');
       }
 
-      // Scroll top
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
@@ -404,7 +380,7 @@
       });
     });
 
-    // --- CAMERA LOGIC ---
+    // --- CAMERA LOGIC & AUTOMATIC WHITE BACKGROUND ---
     function startCamera() {
       const cameraArea = document.getElementById('cameraArea');
       cameraArea.classList.remove('hidden');
@@ -419,8 +395,13 @@
       canvas.width = video.videoWidth || 200;
       canvas.height = video.videoHeight || 200;
       const ctx = canvas.getContext('2d');
+
+      // White Background Fill
+      ctx.fillStyle = '#FFFFFF';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-      currentPhotoBase64 = canvas.toDataURL('image/png');
+
+      currentPhotoBase64 = canvas.toDataURL('image/jpeg', 0.9);
       
       const preview = document.getElementById('photoPreview');
       preview.src = currentPhotoBase64;
@@ -430,21 +411,36 @@
       document.getElementById('cameraArea').classList.add('hidden');
     }
 
+    // --- FILE UPLOAD & AUTOMATIC WHITE BACKGROUND ---
     document.getElementById('regPhoto').addEventListener('change', function(e) {
       const file = e.target.files[0];
       if (file) {
         const reader = new FileReader();
         reader.onload = function(evt) {
-          currentPhotoBase64 = evt.target.result;
-          const preview = document.getElementById('photoPreview');
-          preview.src = currentPhotoBase64;
-          preview.classList.remove('hidden');
+          const img = new Image();
+          img.onload = function() {
+            const canvas = document.getElementById('canvas');
+            canvas.width = img.width;
+            canvas.height = img.height;
+            const ctx = canvas.getContext('2d');
+
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(img, 0, 0);
+
+            currentPhotoBase64 = canvas.toDataURL('image/jpeg', 0.9);
+
+            const preview = document.getElementById('photoPreview');
+            preview.src = currentPhotoBase64;
+            preview.classList.remove('hidden');
+          };
+          img.src = evt.target.result;
         };
         reader.readAsDataURL(file);
       }
     });
 
-    // --- REGISTRATION ---
+    // --- REGISTRATION HELPERS ---
     function calculateAge(dobString) {
       const today = new Date();
       const birthDate = new Date(dobString);
@@ -454,12 +450,17 @@
       return age;
     }
 
-    function generateStudentID() {
-      let nextNum = students.length + 1;
+    async function generateStudentID() {
+      const { count, error } = await supabaseClient
+        .from('students')
+        .select('*', { count: 'exact', head: true });
+        
+      let nextNum = (count || 0) + 1;
       return "MOG" + String(nextNum).padStart(5, '0');
     }
 
-    function handleRegister(e) {
+    // --- REGISTER TO SUPABASE DATABASE ---
+    async function handleRegister(e) {
       e.preventDefault();
       
       const dob = document.getElementById('regDOB').value;
@@ -468,8 +469,14 @@
         return;
       }
 
+      const submitBtn = document.getElementById('submitBtn');
+      submitBtn.innerText = "Fadlan sug...";
+      submitBtn.disabled = true;
+
+      const studentId = await generateStudentID();
+
       const newStudent = {
-        id: generateStudentID(),
+        id: studentId,
         name: document.getElementById('regName').value.toUpperCase(),
         father: document.getElementById('regFather').value.toUpperCase(),
         mother: document.getElementById('regMother').value.toUpperCase(),
@@ -482,8 +489,18 @@
         photo: currentPhotoBase64 || 'https://via.placeholder.com/150'
       };
 
-      students.push(newStudent);
-      localStorage.setItem('mssis_students', JSON.stringify(students));
+      // Insert into Supabase
+      const { data, error } = await supabaseClient
+        .from('students')
+        .insert([newStudent]);
+
+      submitBtn.innerText = "Kooyshi Diwaan-galinta";
+      submitBtn.disabled = false;
+
+      if (error) {
+        alert("Dhib ayaa ka jira kaydinta Supabase: " + error.message);
+        return;
+      }
 
       alert(`Aad ayaa loo diwaangeliyay!\nUser ID-kaagu waa: ${newStudent.id}`);
       document.getElementById('regForm').reset();
@@ -492,15 +509,25 @@
       showTab('student-login');
     }
 
-    // --- STUDENT LOGIN ---
-    function handleStudentLogin(e) {
+    // --- STUDENT LOGIN VIA SUPABASE ---
+    async function handleStudentLogin(e) {
       e.preventDefault();
       const user = document.getElementById('stuUser').value.toUpperCase();
       const pass = document.getElementById('stuPass').value;
 
-      const found = students.find(s => s.id === user && s.password === pass);
+      const { data: foundList, error } = await supabaseClient
+        .from('students')
+        .select('*')
+        .eq('id', user)
+        .eq('password', pass);
 
-      if (found) {
+      if (error) {
+        alert("Dhib ayaa ka jira shabakada: " + error.message);
+        return;
+      }
+
+      if (foundList && foundList.length > 0) {
+        const found = foundList[0];
         const dash = document.getElementById('studentDashboard');
         const details = document.getElementById('studentProfileDetails');
         dash.classList.remove('hidden');
@@ -547,10 +574,22 @@
       document.getElementById('adminPass').value = '';
     }
 
-    function renderStudentTable() {
+    // --- FETCH STUDENTS FROM SUPABASE FOR ADMIN ---
+    async function renderStudentTable() {
       const tbody = document.getElementById('studentTableBody');
       const query = document.getElementById('searchBox').value.toUpperCase();
       tbody.innerHTML = '';
+
+      const { data: fetchStudents, error } = await supabaseClient
+        .from('students')
+        .select('*');
+
+      if (error) {
+        console.error("Dhib ayaa jira marka xogta la soo akhrinayay:", error.message);
+        return;
+      }
+
+      students = fetchStudents || [];
 
       const filtered = students.filter(s => 
         s.name.includes(query) || s.id.includes(query)
@@ -568,7 +607,6 @@
           <td class="p-3 text-slate-600 uppercase text-xs">${s.school}</td>
           <td class="p-3 text-slate-600 text-xs">${s.district}</td>
           <td class="p-3 space-x-2 text-center">
-            <!-- BATOONKA GENERATE ID CARD WAA KAN (Sida la faray) -->
             <button onclick="generateIDCard('${s.id}')" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded shadow-sm text-[11px] font-bold inline-flex items-center"><i class="fa-solid fa-id-card mr-1"></i> ID Card</button>
             <button onclick="deleteStudent('${s.id}')" class="bg-red-100 hover:bg-red-600 hover:text-white text-red-600 px-3 py-1.5 rounded shadow-sm text-[11px] font-bold transition"><i class="fa-solid fa-trash-can"></i></button>
           </td>
@@ -577,15 +615,23 @@
       });
     }
 
-    function deleteStudent(id) {
+    // --- DELETE STUDENT FROM SUPABASE ---
+    async function deleteStudent(id) {
       if (confirm(`Ma hubtaa inaad tirtirto ardaygan: ${id}?`)) {
-        students = students.filter(s => s.id !== id);
-        localStorage.setItem('mssis_students', JSON.stringify(students));
-        renderStudentTable();
+        const { error } = await supabaseClient
+          .from('students')
+          .delete()
+          .eq('id', id);
+
+        if (error) {
+          alert("Dhib ayaa ka jira tirtirida: " + error.message);
+        } else {
+          renderStudentTable();
+        }
       }
     }
 
-    // --- ID CARD GENERATOR WIDGET ---
+    // --- ID CARD GENERATOR ---
     function generateIDCard(id) {
       const student = students.find(s => s.id === id);
       if (!student) return;
@@ -617,57 +663,5 @@
       html2pdf().set(opt).from(element).save();
     }
   </script>
-
-  <!-- === ADDITION 2: REMOVE BACKGROUND MODULE SCRIPT ===
-       Waxay isticmaashaa library @imgly/background-removal (browser/WASM, run gudaha
-       browser-ka, ma u baahna API key ama internet-connection ka dib markii la load-gareeyo).
-       Waxay saartaa background-ka currentPhotoBase64, kadibna waxay cusboonaysiisaa
-       preview-ka iyo currentPhotoBase64 si loo kaydiyo photo-ga aan background lahayn. -->
-  <script type="module">
-    import { removeBackground } from 'https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.5.5/dist/index.js';
-
-    window.removeBackgroundFromPhoto = async function () {
-      const statusEl = document.getElementById('removeBgStatus');
-      const btnEl = document.getElementById('removeBgBtn');
-
-      if (!currentPhotoBase64) {
-        alert("Fadlan marka hore soo geli ama qaad sawirka ardayga.");
-        return;
-      }
-
-      try {
-        btnEl.disabled = true;
-        btnEl.classList.add('opacity-60', 'cursor-not-allowed');
-        statusEl.innerText = "Sawirka waa la shaqaynayaa... (fadlan sug)";
-
-        // currentPhotoBase64 waa data URL, waxaan u beddelaynaa blob si loo geliyo library-ga
-        const sourceResponse = await fetch(currentPhotoBase64);
-        const sourceBlob = await sourceResponse.blob();
-
-        const resultBlob = await removeBackground(sourceBlob);
-
-        const reader = new FileReader();
-        reader.onload = function (evt) {
-          currentPhotoBase64 = evt.target.result;
-          const preview = document.getElementById('photoPreview');
-          preview.src = currentPhotoBase64;
-          preview.classList.remove('hidden');
-          statusEl.innerText = "Background-ka waa la saaray ✅";
-          btnEl.disabled = false;
-          btnEl.classList.remove('opacity-60', 'cursor-not-allowed');
-        };
-        reader.readAsDataURL(resultBlob);
-
-      } catch (err) {
-        console.error(err);
-        statusEl.innerText = "Khalad ayaa dhacay, isku day mar kale.";
-        btnEl.disabled = false;
-        btnEl.classList.remove('opacity-60', 'cursor-not-allowed');
-        alert("Ma suurtogelin in la saaro background-ka: " + err.message);
-      }
-    };
-  </script>
-  <!-- === END ADDITION 2 === -->
-
 </body>
-      </html>
+</html>
