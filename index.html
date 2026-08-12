@@ -153,6 +153,16 @@
           <div class="mt-2">
             <img id="photoPreview" class="w-24 h-28 object-cover border-2 border-blue-200 rounded hidden shadow-sm" alt="Preview">
           </div>
+
+          <!-- === ADDITION 1: REMOVE BACKGROUND BUTTON === -->
+          <div class="mt-2">
+            <button type="button" id="removeBgBtn" onclick="removeBackgroundFromPhoto()" class="bg-purple-600 hover:bg-purple-700 text-white px-3 py-1.5 rounded text-xs font-bold shadow-sm">
+              <i class="fa-solid fa-eraser mr-1"></i> Saar Background-ka Sawirka
+            </button>
+            <span id="removeBgStatus" class="text-xs text-slate-500 ml-2"></span>
+          </div>
+          <!-- === END ADDITION 1 === -->
+
         </div>
 
         <div>
@@ -607,5 +617,57 @@
       html2pdf().set(opt).from(element).save();
     }
   </script>
+
+  <!-- === ADDITION 2: REMOVE BACKGROUND MODULE SCRIPT ===
+       Waxay isticmaashaa library @imgly/background-removal (browser/WASM, run gudaha
+       browser-ka, ma u baahna API key ama internet-connection ka dib markii la load-gareeyo).
+       Waxay saartaa background-ka currentPhotoBase64, kadibna waxay cusboonaysiisaa
+       preview-ka iyo currentPhotoBase64 si loo kaydiyo photo-ga aan background lahayn. -->
+  <script type="module">
+    import { removeBackground } from 'https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.5.5/dist/index.js';
+
+    window.removeBackgroundFromPhoto = async function () {
+      const statusEl = document.getElementById('removeBgStatus');
+      const btnEl = document.getElementById('removeBgBtn');
+
+      if (!currentPhotoBase64) {
+        alert("Fadlan marka hore soo geli ama qaad sawirka ardayga.");
+        return;
+      }
+
+      try {
+        btnEl.disabled = true;
+        btnEl.classList.add('opacity-60', 'cursor-not-allowed');
+        statusEl.innerText = "Sawirka waa la shaqaynayaa... (fadlan sug)";
+
+        // currentPhotoBase64 waa data URL, waxaan u beddelaynaa blob si loo geliyo library-ga
+        const sourceResponse = await fetch(currentPhotoBase64);
+        const sourceBlob = await sourceResponse.blob();
+
+        const resultBlob = await removeBackground(sourceBlob);
+
+        const reader = new FileReader();
+        reader.onload = function (evt) {
+          currentPhotoBase64 = evt.target.result;
+          const preview = document.getElementById('photoPreview');
+          preview.src = currentPhotoBase64;
+          preview.classList.remove('hidden');
+          statusEl.innerText = "Background-ka waa la saaray ✅";
+          btnEl.disabled = false;
+          btnEl.classList.remove('opacity-60', 'cursor-not-allowed');
+        };
+        reader.readAsDataURL(resultBlob);
+
+      } catch (err) {
+        console.error(err);
+        statusEl.innerText = "Khalad ayaa dhacay, isku day mar kale.";
+        btnEl.disabled = false;
+        btnEl.classList.remove('opacity-60', 'cursor-not-allowed');
+        alert("Ma suurtogelin in la saaro background-ka: " + err.message);
+      }
+    };
+  </script>
+  <!-- === END ADDITION 2 === -->
+
 </body>
-</html>
+      </html>
